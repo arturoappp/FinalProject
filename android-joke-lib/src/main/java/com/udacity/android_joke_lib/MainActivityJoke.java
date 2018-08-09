@@ -17,7 +17,7 @@ public class MainActivityJoke extends AppCompatActivity {
     super.onCreate(savedInstanceState);
     // setContentView(R.layout.activity_main_joke);
     binding = DataBindingUtil.setContentView(this, R.layout.activity_main_joke);
-
+    getSupportActionBar().setDisplayHomeAsUpEnabled(true);
     if (getIntent() != null) {
       String joke = getIntent().getStringExtra(JOKE);
       if (joke != null && !joke.isEmpty()) {

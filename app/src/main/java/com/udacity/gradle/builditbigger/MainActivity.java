@@ -1,8 +1,13 @@
 package com.udacity.gradle.builditbigger;
 
 import android.content.Intent;
+import android.databinding.DataBindingUtil;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
+import android.support.annotation.VisibleForTesting;
+import android.support.test.espresso.IdlingResource;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.Menu;
@@ -14,16 +19,30 @@ import com.google.api.client.extensions.android.json.AndroidJsonFactory;
 import com.google.api.client.googleapis.services.AbstractGoogleClientRequest;
 import com.google.api.client.googleapis.services.GoogleClientRequestInitializer;
 import com.udacity.android_joke_lib.MainActivityJoke;
+import com.udacity.gradle.builditbigger.IdlingResource.SimpleIdlingResource;
 import com.udacity.gradle.builditbigger.backend.myApi.MyApi;
+import com.udacity.gradle.builditbigger.databinding.ActivityMainBinding;
 
 import java.io.IOException;
 
 public class MainActivity extends AppCompatActivity {
+  ActivityMainBinding binding;
+  @Nullable private SimpleIdlingResource mIdlingResource;
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
-    setContentView(R.layout.activity_main);
+    binding = DataBindingUtil.setContentView(this, R.layout.activity_main);
+    binding.progressbar.setVisibility(View.INVISIBLE);
+  }
+
+  @VisibleForTesting
+  @NonNull
+  public IdlingResource getIdlingResource() {
+    if (mIdlingResource == null) {
+      mIdlingResource = new SimpleIdlingResource();
+    }
+    return mIdlingResource;
   }
 
   @Override
@@ -43,6 +62,10 @@ public class MainActivity extends AppCompatActivity {
   }
 
   public void tellJoke(View view) {
+    binding.progressbar.setVisibility(View.VISIBLE);
+    if (mIdlingResource != null) {
+      mIdlingResource.setIdleState(false);
+    }
     new EndpointsAsyncTask().execute(NetWorkUtil.URL);
   }
 
@@ -68,13 +91,11 @@ public class MainActivity extends AppCompatActivity {
                       }
                     });
         // end options for devappserver
-
         myApiService = builder.build();
       }
 
       try {
-        //return myApiService.getJoke().execute().getData();
-        return myApiService.sayHi("arturo").execute().getData();
+        return myApiService.getJoke().execute().getData();
       } catch (IOException e) {
         Log.e(MainActivity.this.getClass().getName(), e.getMessage());
         e.printStackTrace();
@@ -84,9 +105,13 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onPostExecute(String joke) {
+      binding.progressbar.setVisibility(View.INVISIBLE);
       Intent intent = new Intent(MainActivity.this, MainActivityJoke.class);
       intent.putExtra(MainActivityJoke.JOKE, joke);
       startActivity(intent);
+      if (mIdlingResource != null) {
+        mIdlingResource.setIdleState(true);
+      }
     }
   }
 }

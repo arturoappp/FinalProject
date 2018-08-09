@@ -3,7 +3,11 @@
     package="com.udacity.android_joke_lib">
 
     <application>
-        <activity android:name=".MainActivityJoke"></activity>
+        <activity android:name=".MainActivityJoke">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.udacity.gradle.builditbigger.MainActivity"/>
+        </activity>
     </application>
 
 </manifest>
