@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_name">my-android-lib</string>
+    <string name="joke_label">Joke:</string>
+</resources>
