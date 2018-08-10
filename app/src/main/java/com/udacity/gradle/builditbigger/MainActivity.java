@@ -104,7 +104,7 @@ public class MainActivity extends AppCompatActivity implements MyListenerCallBac
       } catch (IOException e) {
         Log.e(this.getClass().getName(), e.getMessage());
         e.printStackTrace();
-        return e.getMessage();
+        return "";
       }
     }
 

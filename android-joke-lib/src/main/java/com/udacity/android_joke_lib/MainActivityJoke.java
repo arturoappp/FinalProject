@@ -27,8 +27,9 @@ public class MainActivityJoke extends AppCompatActivity {
           binding.tvJoke.setText(joke);
           Toast.makeText(this, "joke in lib:" + joke, Toast.LENGTH_SHORT).show();
         }
+      } else {
+        binding.tvJoke.setText(R.string.no_extra_joke);
       }
-      binding.tvJoke.setText(R.string.no_extra_joke);
     }
   }
 }
