@@ -25,7 +25,7 @@ import com.udacity.gradle.builditbigger.databinding.ActivityMainBinding;
 
 import java.io.IOException;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements MyListenerCallBack {
   ActivityMainBinding binding;
   @Nullable private SimpleIdlingResource mIdlingResource;
 
@@ -66,11 +66,16 @@ public class MainActivity extends AppCompatActivity {
     if (mIdlingResource != null) {
       mIdlingResource.setIdleState(false);
     }
-    new EndpointsAsyncTask().execute(NetWorkUtil.URL);
+    new EndpointsAsyncTask(this).execute(NetWorkUtil.URL);
   }
 
-  class EndpointsAsyncTask extends AsyncTask<String, Void, String> {
+  static class EndpointsAsyncTask extends AsyncTask<String, Void, String> {
     private MyApi myApiService = null;
+    private MyListenerCallBack mCallBack;
+
+    public EndpointsAsyncTask(MyListenerCallBack callback) {
+      mCallBack = callback;
+    }
 
     @Override
     protected String doInBackground(String... params) {
@@ -97,7 +102,7 @@ public class MainActivity extends AppCompatActivity {
       try {
         return myApiService.getJoke().execute().getData();
       } catch (IOException e) {
-        Log.e(MainActivity.this.getClass().getName(), e.getMessage());
+        Log.e(this.getClass().getName(), e.getMessage());
         e.printStackTrace();
         return e.getMessage();
       }
@@ -105,13 +110,18 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onPostExecute(String joke) {
-      binding.progressbar.setVisibility(View.INVISIBLE);
-      Intent intent = new Intent(MainActivity.this, MainActivityJoke.class);
-      intent.putExtra(MainActivityJoke.JOKE, joke);
-      startActivity(intent);
-      if (mIdlingResource != null) {
-        mIdlingResource.setIdleState(true);
-      }
+      mCallBack.onSuccess(joke);
+    }
+  }
+
+  @Override
+  public void onSuccess(String joke) {
+    binding.progressbar.setVisibility(View.INVISIBLE);
+    Intent intent = new Intent(MainActivity.this, MainActivityJoke.class);
+    intent.putExtra(MainActivityJoke.JOKE, joke);
+    startActivity(intent);
+    if (mIdlingResource != null) {
+      mIdlingResource.setIdleState(true);
     }
   }
 }

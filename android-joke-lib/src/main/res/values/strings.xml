@@ -1,4 +1,5 @@
 <resources>
     <string name="app_name">android-joke-lib</string>
     <string name="joke_label">Joke:</string>
+    <string name="no_extra_joke">Upps, there isn\'t no joke to show, and this is not a Joke!</string>
 </resources>
